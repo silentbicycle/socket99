@@ -1,0 +1,5 @@
+libsocket99.a
+test_socket99
+*.o
+*.core
+*.dSYM
