@@ -23,9 +23,10 @@ lying around somewhere, right?
 
 # Basic Usage
 
-Look at the fields in `struct socket99_config`, call `socket99_open`
-with a pointer to a configuration struct using the C99 designated
-initializer syntax. Only a few of the fields will be used, such as:
+Look at the fields in `struct socket99_config` listen in `socket99.h`,
+call `socket99_open` with a pointer to a configuration struct using the
+C99 designated initializer syntax. Only a few of the fields will be
+used, such as:
 
     socket99_config cfg = {
         .host = "127.0.0.1",
@@ -37,7 +38,28 @@ initializer syntax. Only a few of the fields will be used, such as:
 for a non-blocking TCP server that listens to 127.0.0.1. This function
 will return a bool for whether the socket was successfully created, and
 the result struct argument will be modified to contain a status code and
-either a file descriptor (on success) or error information on failure.
+either a file descriptor (on success) or error information on failure:
+
+    socket99_result res;   // result output in this struct
+    bool ok = socket99_open(&cfg, &res);
+
+The configuration and result structs are no longer needed after the
+result struct's file descriptor has been saved / errors are handled, so
+both structs can be stack-allocated.
+
+For more usage examples, look at `test_socket99.c`.
+
+
+# Running the tests
+
+To run the tests:
+
+    $ make test
+    
+Note that the tests create a couple short-lived sockets on port 8080,
+and if that port is already in use, the tests will fail. (This may be
+configurable in a future release; it should probably check an
+environment variable but default to 8080.)
 
 
 # Supported Use Cases
