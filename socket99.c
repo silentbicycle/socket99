@@ -30,7 +30,7 @@
 #include "socket99.h"
 
 /* Built-in default backlog size. */
-#define DEF_BACKLOG_SIZE SOMAXCONN
+#define DEF_BACKLOG_SIZE SOMAXCONN   // very backlog. wow.
 
 static bool set_defaults_and_check_cfg(socket99_config *cfg);
 static bool make_tcp_udp(socket99_config *cfg, socket99_result *out);
