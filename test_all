@@ -1,0 +1,33 @@
+#!/bin/sh
+
+T="./test_socket99"
+
+echo "Checking TCP client and server..."
+$T tcp_server &
+LAST=$!
+sleep 1
+$T tcp_client || kill ${LAST}
+
+echo
+
+echo "Checking UDP client and server..."
+$T udp_server &
+LAST=$!
+sleep 1
+$T udp_client || kill ${LAST}
+
+echo
+
+echo "Checking Unix domain sockets (stream-based)..."
+$T unix_server_stream &
+LAST=$!
+sleep 1
+$T unix_client_stream || kill ${LAST}
+
+echo
+
+echo "Checking Unix domain sockets (datagram-based)..."
+$T unix_server_datagram &
+LAST=$!
+sleep 1
+$T unix_client_datagram || kill ${LAST}
