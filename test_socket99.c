@@ -127,8 +127,7 @@ bool tcp_client(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed to open: status %d, errno %d\n",
-            res.status, res.saved_errno);
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
     
@@ -150,7 +149,10 @@ bool tcp_server(void) {
 
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
-    if (!ok) { return false; }
+    if (!ok) {
+        printf("failed to open: %s\n", strerror(res.saved_errno));
+        return false;
+    }
 
     struct sockaddr address;
     socklen_t addr_len;
@@ -177,7 +179,10 @@ bool tcp_server_nonblocking(void) {
 
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
-    if (!ok) { return false; }
+    if (!ok) {
+        printf("failed to open: %s\n", strerror(res.saved_errno));
+        return false;
+    }
 
     struct pollfd fds[1];
     fds[0].fd = res.fd;
@@ -220,7 +225,7 @@ bool udp_client(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed to open\n");
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
     
@@ -260,7 +265,7 @@ bool udp_server(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed, errno %d\n", res.saved_errno);
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
 
@@ -290,7 +295,7 @@ bool unix_client_stream(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed %d, errno %d\n", res.status, res.saved_errno);
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
 
@@ -309,7 +314,7 @@ bool unix_client_datagram(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed %d, errno %d\n", res.status, res.saved_errno);
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
 
@@ -343,7 +348,7 @@ bool unix_server_stream(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed %d, errno %d\n", res.status, res.saved_errno);
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
 
@@ -377,7 +382,7 @@ bool unix_server_datagram(void) {
     socket99_result res;
     bool ok = socket99_open(&cfg, &res);
     if (!ok) {
-        printf("failed %d, errno %d\n", res.status, res.saved_errno);
+        printf("failed to open: %s\n", strerror(res.saved_errno));
         return false;
     }
 
