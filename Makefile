@@ -27,7 +27,7 @@ test_${PROJECT}: test_${PROJECT}.c ${OBJS} ${TEST_OBJS}
 	${CC} -o $@ test_${PROJECT}.c ${OBJS} ${TEST_OBJS} ${CFLAGS} ${LDFLAGS}
 
 test: ./test_${PROJECT}
-	test_all
+	./test_all
 
 clean:
 	rm -f ${PROJECT} test_${PROJECT} *.o *.a *.core
