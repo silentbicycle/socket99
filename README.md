@@ -5,7 +5,7 @@ A wrapper library for the BSD sockets API.
 This library trades the series of `getaddrinfo`, `socket`, `connect`,
 `bind`, `listen`, etc. functions and their convoluted, casted arguments
 for just one function that takes two structs (configuration and output).
-By creatively using C99's "designated initializers", the configuration
+By [creatively using C99's "designated initializers"][1], the configuration
 struct works rather like a configuration key/value hash; the output
 struct contains either the socket file descriptor or error information.
 
@@ -13,6 +13,8 @@ The sheer generality of the BSD sockets API also makes it rather
 unwieldy. While the sockets API can be used for a lot of esoteric
 things, there's no reason common use cases such as opening a TCP socket
 to a given host and port should take dozens of lines of code.
+
+[1]: https://spin.atomicobject.com/2014/10/08/c99-api-designated-initializer/
 
 
 # Requirements
