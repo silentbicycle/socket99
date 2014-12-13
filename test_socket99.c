@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
                 printf("pass %s\n", tc->name);
                 return 0;
             } else {
-                printf("FAIL %s\n", tc->name);
+                socket99_fprintf(stderr, res);
                 return 1;
             }
         } else {
