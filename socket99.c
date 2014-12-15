@@ -226,6 +226,7 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
             } else {
                 close(fd);
                 fd = -1;
+                out->status = SOCKET99_ERROR_CONNECT;
                 continue;
             }
         }
