@@ -8,6 +8,12 @@ LAST=$!
 sleep 1
 $T tcp_client || kill ${LAST}
 
+echo "Checking TCP client and server... (nonblocking)"
+$T tcp_server_nonblocking &
+LAST=$!
+sleep 1
+$T tcp_client_nonblocking || kill ${LAST}
+
 echo
 
 echo "Checking UDP client and server..."

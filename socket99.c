@@ -36,6 +36,8 @@ static bool set_defaults_and_check_cfg(socket99_config *cfg);
 static bool make_tcp_udp(socket99_config *cfg, socket99_result *out);
 static bool make_unixdomain(socket99_config *cfg, socket99_result *out);
 static bool set_nonblocking(socket99_result *out);
+static bool set_socket_options(socket99_config *cfg,
+    socket99_result *out, int fd);
 static const char *status_key(enum socket99_status s);
 
 /* Attempt to open a socket, according to the configuration stored in
@@ -138,6 +140,10 @@ static bool make_unixdomain(socket99_config *cfg, socket99_result *out) {
         return fail_with_errno(out, SOCKET99_ERROR_SOCKET);
     }
 
+    if (!set_socket_options(cfg, out, fd)) {
+        return false;
+    }
+
     struct sockaddr_un sun;
     memset(&sun, 0, sizeof(sun));
     sun.sun_family = AF_UNIX;
@@ -204,6 +210,10 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
             continue;
         }
 
+        if (!set_socket_options(cfg, out, fd)) {
+            return false;
+        }
+
         if (cfg->server) {
             int bind_res = bind(fd, res->ai_addr, res->ai_addrlen);
             if (bind_res == -1) {
@@ -260,6 +270,22 @@ static bool set_nonblocking(socket99_result *out) {
     return true;
 }
 
+static bool set_socket_options(socket99_config *cfg,
+        socket99_result *out, int fd) {
+    for (int i = 0; i < SOCKET99_MAX_SOCK_OPTS; i++) {
+        socket99_sockopt *opt = &cfg->sockopts[i];
+        if (opt->option_id == 0) { break; }
+
+        if (setsockopt(fd, SOL_SOCKET, opt->option_id,
+                opt->value, opt->value_len) < 0) {
+            return fail_with_errno(out, SOCKET99_ERROR_SETSOCKOPT);
+        }
+    }
+    
+    return true;
+}
+
+
 static const char *status_key(enum socket99_status s) {
     switch (s) {
     case SOCKET99_OK:
@@ -280,6 +306,8 @@ static const char *status_key(enum socket99_status s) {
         return "snprintf";
     case SOCKET99_ERROR_CONFIGURATION:
         return "configuration";
+    case SOCKET99_ERROR_SETSOCKOPT:
+        return "setsockopt";
     case SOCKET99_ERROR_UNKNOWN:
     default:
         return "unknown";

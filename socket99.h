@@ -9,6 +9,20 @@
 #include <stdbool.h>
 #include <netdb.h>
 
+/* Max number of socket options to allow in the config struct.
+ * (The first option_id of 0 will be treated as end-of-options.) */
+#define SOCKET99_MAX_SOCK_OPTS 4
+
+/* An option ID, value, sizeof(value) tuple for setsockopt(2). */
+typedef struct socket99_sockopt {
+    int option_id;
+    void *value;
+    socklen_t value_len;
+} socket99_sockopt;
+
+/* Configuration for a socket. Not all of these fields need to
+ * be set, and ones omitted from a C99-style "designated initializer"
+ * struct literal will be zeroed out and replaced with defaults. */
 typedef struct {
     /* Hostname and port, for TCP or UDP sockets. */
     char *host;
@@ -27,6 +41,8 @@ typedef struct {
     bool nonblocking;           /* non-blocking operation? */
 
     int backlog_size;           /* set a custom backlog size */
+
+    socket99_sockopt sockopts[SOCKET99_MAX_SOCK_OPTS];
 } socket99_config;
 
 enum socket99_status {
@@ -47,21 +63,27 @@ enum socket99_status {
     /* Invalid combination of options in configuration. */
     SOCKET99_ERROR_CONFIGURATION = -8,
 
+    /* Error in setsockopt(2). */
+    SOCKET99_ERROR_SETSOCKOPT = -9,
+
     /* Other unknown error. */
-    SOCKET99_ERROR_UNKNOWN = -9,
+    SOCKET99_ERROR_UNKNOWN = -10,
 };
 
+/* Result from calling socket99_open with a given socket99_config. */
 typedef struct {
     /* Result code and errno value from failure (if any). */
     enum socket99_status status;
+
+    /* File descriptor, set if status is SOCKET99_OK (success). */
+    int fd;
+
+    /* Error code from socket(2), bind(2), etc. */
     int saved_errno;
 
     /* Error code from getaddrinfo, only set if status is
      * SOCKET99_ERROR_GETADDRINFO. See: gai_strerror(3). */
     int getaddrinfo_error;
-
-    /* File descriptor, set if status is SOCKET99_OK (success). */
-    int fd;
 } socket99_result;
 
 /* Attempt to open a socket, according to the configuration stored in
