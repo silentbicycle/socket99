@@ -36,6 +36,9 @@ static bool set_defaults_and_check_cfg(socket99_config *cfg);
 static bool make_tcp_udp(socket99_config *cfg, socket99_result *out);
 static bool make_unixdomain(socket99_config *cfg, socket99_result *out);
 static bool set_nonblocking(socket99_result *out);
+static bool set_socket_options(socket99_config *cfg,
+    socket99_result *out, int fd);
+static const char *status_key(enum socket99_status s);
 
 /* Attempt to open a socket, according to the configuration stored in
  * CFG. Returns whether the the socket opened; further details will be
@@ -60,6 +63,28 @@ bool socket99_open(socket99_config *cfg, socket99_result *res) {
     }
 
     return true;
+}
+
+/* Construct an error message in BUF, based on the status codes
+ * in *RES. This has the same return value and general behavior
+ * as snprintf -- if the return value is >= buf_size, the string
+ * has been truncated. Returns -1 if either BUF or RES are NULL. */
+int socket99_snprintf(char *buf, size_t buf_size, socket99_result *res) {
+    if (buf == NULL || res == NULL) { return 0; }
+    return snprintf(buf, buf_size, "%s: %s",
+        status_key(res->status),
+        (res->status == SOCKET99_ERROR_GETADDRINFO
+            ? gai_strerror(res->getaddrinfo_error)
+            : strerror(res->saved_errno)));
+}
+
+/* Print an error message based on the status contained in *RES. */
+void socket99_fprintf(FILE *f, socket99_result *res) {
+    if (f == NULL || res == NULL) { return; }
+    fprintf(f, "%s: %s\n", status_key(res->status),
+        (res->status == SOCKET99_ERROR_GETADDRINFO
+            ? gai_strerror(res->getaddrinfo_error)
+            : strerror(res->saved_errno)));
 }
 
 /* Set "hints" in an addrinfo struct, to be passed to getaddrinfo. */
@@ -113,6 +138,10 @@ static bool make_unixdomain(socket99_config *cfg, socket99_result *out) {
     int fd = socket(AF_UNIX, cfg->datagram ? SOCK_DGRAM : SOCK_STREAM, 0);
     if (fd == -1) {
         return fail_with_errno(out, SOCKET99_ERROR_SOCKET);
+    }
+
+    if (!set_socket_options(cfg, out, fd)) {
+        return false;
     }
 
     struct sockaddr_un sun;
@@ -181,6 +210,10 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
             continue;
         }
 
+        if (!set_socket_options(cfg, out, fd)) {
+            return false;
+        }
+
         if (cfg->server) {
             int bind_res = bind(fd, res->ai_addr, res->ai_addrlen);
             if (bind_res == -1) {
@@ -203,6 +236,7 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
             } else {
                 close(fd);
                 fd = -1;
+                out->status = SOCKET99_ERROR_CONNECT;
                 continue;
             }
         }
@@ -212,6 +246,8 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
         if (out->status == SOCKET99_OK) {
             return fail_with_errno(out, SOCKET99_ERROR_UNKNOWN);
         } else {
+            out->saved_errno = errno;
+            errno = 0;
             return false;
         }
     }
@@ -232,4 +268,48 @@ static bool set_nonblocking(socket99_result *out) {
         return fail_with_errno(out, SOCKET99_ERROR_FCNTL);
     }
     return true;
+}
+
+static bool set_socket_options(socket99_config *cfg,
+        socket99_result *out, int fd) {
+    for (int i = 0; i < SOCKET99_MAX_SOCK_OPTS; i++) {
+        socket99_sockopt *opt = &cfg->sockopts[i];
+        if (opt->option_id == 0) { break; }
+
+        if (setsockopt(fd, SOL_SOCKET, opt->option_id,
+                opt->value, opt->value_len) < 0) {
+            return fail_with_errno(out, SOCKET99_ERROR_SETSOCKOPT);
+        }
+    }
+    
+    return true;
+}
+
+
+static const char *status_key(enum socket99_status s) {
+    switch (s) {
+    case SOCKET99_OK:
+        return "ok";
+    case SOCKET99_ERROR_GETADDRINFO:
+        return "getaddrinfo";
+    case SOCKET99_ERROR_SOCKET:
+        return "socket";
+    case SOCKET99_ERROR_BIND:
+        return "bind";
+    case SOCKET99_ERROR_LISTEN:
+        return "listen";
+    case SOCKET99_ERROR_CONNECT:
+        return "connect";
+    case SOCKET99_ERROR_FCNTL:
+        return "fcntl";
+    case SOCKET99_ERROR_SNPRINTF:
+        return "snprintf";
+    case SOCKET99_ERROR_CONFIGURATION:
+        return "configuration";
+    case SOCKET99_ERROR_SETSOCKOPT:
+        return "setsockopt";
+    case SOCKET99_ERROR_UNKNOWN:
+    default:
+        return "unknown";
+    }
 }

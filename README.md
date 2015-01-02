@@ -74,6 +74,8 @@ environment variable but default to 8080.)
 
 + IPV4, IPv6, and "don't care"
 
++ setsockopt(2) options
+
 
 # Future Development
 
