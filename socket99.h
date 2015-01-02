@@ -2,7 +2,7 @@
 #define SOCKET99_H
 
 #define SOCKET99_VERSION_MAJOR 0
-#define SOCKET99_VERSION_MINOR 1 // dev, pre 0.2.0
+#define SOCKET99_VERSION_MINOR 2
 #define SOCKET99_VERSION_PATCH 0
 
 #include <stdint.h>
