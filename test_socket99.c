@@ -251,7 +251,7 @@ bool tcp_server_nonblocking(void) {
         return false;
     }
 
-    struct pollfd fds[1];
+    struct pollfd fds[2];
     fds[0].fd = res.fd;
     fds[0].events = POLLIN;
     
