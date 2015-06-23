@@ -37,6 +37,7 @@ INSTALL ?=	install
 RM ?=		rm
 
 install:
+	${INSTALL} -d ${PREFIX}/lib ${PREFIX}/include
 	${INSTALL} -c lib${PROJECT}.a ${PREFIX}/lib
 	${INSTALL} -c ${PROJECT}.h ${PREFIX}/include
 
