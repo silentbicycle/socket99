@@ -17,6 +17,11 @@ to a given host and port should take dozens of lines of code.
 [1]: https://spin.atomicobject.com/2014/10/08/c99-api-designated-initializer/
 
 
+# License
+
+socket99 is released under the ISC license.
+
+
 # Requirements
 
 This depends on C99 and a POSIX environment. You've got one of those
