@@ -197,6 +197,7 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
     int addr_res = getaddrinfo(cfg->host, port_str, &hints, &res);
     if (addr_res != 0) {
         out->getaddrinfo_error = addr_res;
+        freeaddrinfo(res);
         return fail_with_errno(out, SOCKET99_ERROR_GETADDRINFO);
     }
     
@@ -211,18 +212,21 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
         }
 
         if (!set_socket_options(cfg, out, fd)) {
+            freeaddrinfo(res);
             return false;
         }
 
         if (cfg->server) {
             int bind_res = bind(fd, res->ai_addr, res->ai_addrlen);
             if (bind_res == -1) {
+                freeaddrinfo(res);
                 return fail_with_errno(out, SOCKET99_ERROR_BIND);
             }
 
             if (!cfg->datagram) {
                 int listen_res = listen(fd, cfg->backlog_size);
                 if (listen_res == -1) {
+                    freeaddrinfo(res);
                     return fail_with_errno(out, SOCKET99_ERROR_LISTEN);
                 }
             }
@@ -244,10 +248,12 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
 
     if (fd == -1) {
         if (out->status == SOCKET99_OK) {
+            freeaddrinfo(res);
             return fail_with_errno(out, SOCKET99_ERROR_UNKNOWN);
         } else {
             out->saved_errno = errno;
             errno = 0;
+            freeaddrinfo(res);
             return false;
         }
     }
