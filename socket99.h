@@ -87,7 +87,7 @@ typedef struct {
 } socket99_result;
 
 /* Attempt to open a socket, according to the configuration stored in
- * CFG. Returns whether the the socket opened; further details will be
+ * CFG. Returns whether the socket opened; further details will be
  * stored in RES. */
 bool socket99_open(socket99_config *cfg, socket99_result *res);
 
