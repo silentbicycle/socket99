@@ -67,6 +67,8 @@ static test_case_info info[] = {
 
 #define TEST_CASE_COUNT (sizeof(info) / sizeof(info[0]))
 
+static void usage(char *name) __attribute__ ((noreturn));
+
 static void usage(char *name) {
     printf("Integration tests for socket library.\n");
     printf("Usage:\n    %s TEST_NAME\n", name);
@@ -108,7 +110,6 @@ int main(int argc, char **argv) {
             usage(argv[0]);
         }
     }
-    return 0;
 }
 
 ssize_t read_and_print(int fd) {
@@ -256,7 +257,7 @@ bool tcp_server_nonblocking(void) {
     fds[0].events = POLLIN;
     
     ssize_t received = 0;
-    int poll_fds = 1;
+    nfds_t poll_fds = 1;
     int client_fd = -1;
     for (;;) {
         int poll_res = poll(fds, poll_fds, 1000 /* msec */);

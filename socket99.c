@@ -234,8 +234,8 @@ static bool make_tcp_udp(socket99_config *cfg, socket99_result *out) {
         } else /* client */ {
             if (cfg->datagram) { break; }
 
-            int res = connect(fd, ai->ai_addr, ai->ai_addrlen);
-            if (res == 0) {
+            int connect_res = connect(fd, ai->ai_addr, ai->ai_addrlen);
+            if (connect_res == 0) {
                 break;
             } else {
                 close(fd);
@@ -315,7 +315,6 @@ static const char *status_key(enum socket99_status s) {
     case SOCKET99_ERROR_SETSOCKOPT:
         return "setsockopt";
     case SOCKET99_ERROR_UNKNOWN:
-    default:
         return "unknown";
     }
 }
