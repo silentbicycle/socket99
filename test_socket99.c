@@ -342,7 +342,7 @@ bool udp_client(void) {
     socket99_set_hints(&cfg, &hints);
     
     char port_str[8];
-    if (8< snprintf(port_str, 8, "%zd", port)) {
+    if (8< snprintf(port_str, 8, "%d", port)) {
         close(res.fd);
         return false;  // death of a thousand papercuts
     }

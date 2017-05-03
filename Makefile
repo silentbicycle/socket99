@@ -1,6 +1,6 @@
 PROJECT = 	socket99
 OPTIMIZE = 	-O3
-WARN = 		-Wall -Wextra -Weverything -Wno-padded -pedantic
+WARN = 		-Wall -Wextra -Wno-padded -pedantic
 
 # These are necessary because the library depends on
 # both C99 _and_ POSIX (for the BSD sockets API).

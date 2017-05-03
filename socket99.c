@@ -315,6 +315,7 @@ static const char *status_key(enum socket99_status s) {
     case SOCKET99_ERROR_SETSOCKOPT:
         return "setsockopt";
     case SOCKET99_ERROR_UNKNOWN:
+    default:
         return "unknown";
     }
 }
