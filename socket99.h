@@ -3,7 +3,7 @@
 
 #define SOCKET99_VERSION_MAJOR 0
 #define SOCKET99_VERSION_MINOR 2
-#define SOCKET99_VERSION_PATCH 1
+#define SOCKET99_VERSION_PATCH 2
 
 #include <stdint.h>
 #include <stdbool.h>

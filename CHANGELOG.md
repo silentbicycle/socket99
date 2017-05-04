@@ -1,6 +1,6 @@
 # socket99 Changes By Release
 
-## v 0.2.2 - TBD
+## v 0.2.2 - 2017-05-04
 
 ### API Changes
 
