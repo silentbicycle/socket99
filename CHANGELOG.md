@@ -1,5 +1,18 @@
 # socket99 Changes By Release
 
+## v 0.2.2 - TBD
+
+### API Changes
+
+None.
+
+### Other Improvements
+
+Corrected the `_POSIX_C_SOURCE` definition in the Makefile.
+
+Make the port for the tests configurable.
+
+
 ## v 0.2.1 - 2017-05-03
 
 ### API Changes

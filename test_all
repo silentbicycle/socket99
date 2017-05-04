@@ -2,38 +2,40 @@
 
 T="./test_socket99"
 
+PORT=${PORT:-8080}
+
 echo "Checking TCP client and server..."
-$T tcp_server &
+$T tcp_server ${PORT} &
 LAST=$!
 sleep 0.1
-$T tcp_client || kill ${LAST}
+$T tcp_client ${PORT} || kill ${LAST}
 
 echo "Checking TCP client and server... (nonblocking)"
-$T tcp_server_nonblocking &
+$T tcp_server_nonblocking ${PORT} &
 LAST=$!
 sleep 0.1
-$T tcp_client_nonblocking || kill ${LAST}
+$T tcp_client_nonblocking ${PORT} || kill ${LAST}
 
 echo
 
 echo "Checking UDP client and server..."
-$T udp_server &
+$T udp_server ${PORT} &
 LAST=$!
 sleep 0.1
-$T udp_client || kill ${LAST}
+$T udp_client ${PORT} || kill ${LAST}
 
 echo
 
 echo "Checking Unix domain sockets (stream-based)..."
-$T unix_server_stream &
+$T unix_server_stream ${PORT} &
 LAST=$!
 sleep 0.1
-$T unix_client_stream || kill ${LAST}
+$T unix_client_stream ${PORT} || kill ${LAST}
 
 echo
 
 echo "Checking Unix domain sockets (datagram-based)..."
-$T unix_server_datagram &
+$T unix_server_datagram ${PORT} &
 LAST=$!
 sleep 0.1
-$T unix_client_datagram || kill ${LAST}
+$T unix_client_datagram ${PORT} || kill ${LAST}

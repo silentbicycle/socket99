@@ -64,9 +64,10 @@ To run the tests:
     $ make test
     
 Note that the tests create a couple short-lived sockets on port 8080,
-and if that port is already in use, the tests will fail. (This may be
-configurable in a future release; it should probably check an
-environment variable but default to 8080.)
+and if that port is already in use, the tests will fail. To run the
+tests on a different port, set the `PORT` environment variable:
+
+    $ env PORT=12345 make test
 
 
 # Supported Use Cases

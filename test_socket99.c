@@ -71,7 +71,7 @@ static void usage(char *name) __attribute__ ((noreturn));
 
 static void usage(char *name) {
     printf("Integration tests for socket library.\n");
-    printf("Usage:\n    %s TEST_NAME\n", name);
+    printf("Usage:\n    %s TEST_NAME [PORT]\n", name);
     printf("where TEST_NAME is one of:\n");
     for (uint16_t i = 0; i < TEST_CASE_COUNT; i++) {
         printf("'%s':\n    %s\n", info[i].name, info[i].descr);
